@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -19,6 +20,8 @@ import java.util.UUID;
 public class UtenteService {
     @Autowired
     private UtenteRepository utenteRepository;
+    @Autowired
+    private PasswordEncoder bcrypt;
 
     public Utente save(UtenteDTO payload) {
         if (utenteRepository.existsByEmail(payload.email())) {
@@ -29,7 +32,7 @@ public class UtenteService {
             throw new BadRequestException("Lo username " + payload.username() + " è già in uso");
         }
 
-        Utente nuovoUtente = new Utente(payload.nome(), payload.cognome(), payload.username(), payload.email(), payload.password(), Ruolo.UTENTE);
+        Utente nuovoUtente = new Utente(payload.nome(), payload.cognome(), payload.username(), payload.email(), bcrypt.encode(payload.password()), Ruolo.UTENTE);
         return utenteRepository.save(nuovoUtente);
     }
 
@@ -60,8 +63,7 @@ public class UtenteService {
         utenteTrovato.setCognome(payload.cognome());
         utenteTrovato.setUsername(payload.username());
         utenteTrovato.setEmail(payload.email());
-        utenteTrovato.setPassword(payload.password());
-
+        utenteTrovato.setPassword(bcrypt.encode(payload.password()));
         return utenteRepository.save(utenteTrovato);
     }
 
