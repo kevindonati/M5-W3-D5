@@ -5,6 +5,7 @@ import kevindonati.M5_W3_D5.enums.Ruolo;
 import kevindonati.M5_W3_D5.exceptions.BadRequestException;
 import kevindonati.M5_W3_D5.exceptions.NotFoundException;
 import kevindonati.M5_W3_D5.payloads.UtenteDTO;
+import kevindonati.M5_W3_D5.payloads.UtenteUpdateDTO;
 import kevindonati.M5_W3_D5.repositories.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,7 @@ public class UtenteService {
         return utenteRepository.findById(id).orElseThrow(() -> new NotFoundException("Utente con id " + id + " non trovato"));
     }
 
-    public Utente findByIdAndUpdate(UUID id, UtenteDTO payload) {
+    public Utente findByIdAndUpdate(UUID id, UtenteUpdateDTO payload) {
         Utente utenteTrovato = this.findById(id);
         if (!utenteTrovato.getEmail().equals(payload.email()) && utenteRepository.existsByEmail(payload.email())) {
             throw new BadRequestException("L'email è già registrata");
