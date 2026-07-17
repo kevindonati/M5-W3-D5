@@ -2,7 +2,9 @@ package kevindonati.M5_W3_D5.services;
 
 import kevindonati.M5_W3_D5.entities.Evento;
 import kevindonati.M5_W3_D5.entities.Utente;
+import kevindonati.M5_W3_D5.exceptions.BadRequestException;
 import kevindonati.M5_W3_D5.exceptions.NotFoundException;
+import kevindonati.M5_W3_D5.exceptions.UnauthorizedException;
 import kevindonati.M5_W3_D5.payloads.EventoDTO;
 import kevindonati.M5_W3_D5.repositories.EventoRepository;
 import kevindonati.M5_W3_D5.repositories.UtenteRepository;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +25,14 @@ public class EventoService {
     private EventoRepository eventoRepository;
     @Autowired
     private UtenteService utenteService;
+
+    public Evento save(EventoDTO payload, Utente organizzatore) {
+        if (payload.dataEvento().isBefore(LocalDate.now())) {
+            throw new BadRequestException("La data non può essere nel passato");
+        }
+        Evento nuovoEvento = new Evento(payload.titolo(), payload.descrizione(), payload.dataEvento(), payload.luogo(), payload.postiDisponibili(), organizzatore);
+        return eventoRepository.save(nuovoEvento);
+    }
 
     public Page<Evento> findAll(int page, int size, String orderBy) {
         if (size > 50) size = 50;
@@ -40,8 +51,11 @@ public class EventoService {
         return eventoRepository.findByOrganizzatore(organizzatore);
     }
 
-    public Evento findByIdAndUpdate(UUID id, EventoDTO payload) {
+    public Evento findByIdAndUpdate(UUID id, EventoDTO payload, Utente utenteAutenticato) {
         Evento eventoTrovato = this.findById(id);
+        if (!eventoTrovato.getOrganizzatore().getId().equals(utenteAutenticato.getId())) {
+            throw new UnauthorizedException("Non puoi modificare un evento creato da un altro organizzatore");
+        }
 
         eventoTrovato.setTitolo(payload.titolo());
         eventoTrovato.setDescrizione(payload.descrizione());
@@ -52,8 +66,11 @@ public class EventoService {
         return eventoRepository.save(eventoTrovato);
     }
 
-    public void findByIdAndDelete(UUID id) {
+    public void findByIdAndDelete(UUID id, Utente utenteAutenticato) {
         Evento eventoTrovato = this.findById(id);
+        if (!eventoTrovato.getOrganizzatore().getId().equals(utenteAutenticato.getId())) {
+            throw new UnauthorizedException("Non puoi eliminare un evento creato da un altro organizzatore");
+        }
         eventoRepository.delete(eventoTrovato);
     }
 }

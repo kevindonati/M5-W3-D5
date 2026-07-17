@@ -1,12 +1,18 @@
 package kevindonati.M5_W3_D5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import kevindonati.M5_W3_D5.enums.Ruolo;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +20,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Utente {
+@JsonIgnoreProperties({"password", "credentialsNonExpired", "enabled", "accountNonExpired", "authorities", "accountNonLocked"})
+public class Utente implements UserDetails {
     @Id
     @GeneratedValue
     @Setter(AccessLevel.NONE)
@@ -46,5 +53,15 @@ public class Utente {
         this.email = email;
         this.password = password;
         this.ruolo = ruolo;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.ruolo.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
     }
 }

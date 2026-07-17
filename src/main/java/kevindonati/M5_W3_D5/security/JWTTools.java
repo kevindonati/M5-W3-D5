@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JWTTools {
@@ -32,5 +33,9 @@ public class JWTTools {
         } catch (Exception e) {
             throw new UnauthorizedException("Token non valido");
         }
+    }
+
+    public UUID extractIdFromToken(String token) {
+        return UUID.fromString(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parseSignedClaims(token).getPayload().getSubject());
     }
 }
