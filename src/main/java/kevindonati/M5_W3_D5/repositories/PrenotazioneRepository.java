@@ -12,6 +12,6 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, UUID
     List<Prenotazione> findByUtente(Utente utente);
 
     List<Prenotazione> findByEvento(Evento evento);
-
-    boolean existsByUtenteAndEvento(Utente utente, Evento evento);
+    
+    boolean existsByEvento(Evento evento);
 }

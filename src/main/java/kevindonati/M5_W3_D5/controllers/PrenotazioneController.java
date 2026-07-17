@@ -19,6 +19,11 @@ import java.util.UUID;
 public class PrenotazioneController {
     @Autowired
     private PrenotazioneService prenotazioneService;
+    
+    @GetMapping("/me")
+    public List<Prenotazione> getOwnPrenotazioni(@AuthenticationPrincipal Utente utente) {
+        return prenotazioneService.findByUtente(utente);
+    }
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -47,9 +52,5 @@ public class PrenotazioneController {
         prenotazioneService.findByIdAndDelete(id, utente);
     }
 
-    @GetMapping("/me")
-    public List<Prenotazione> getOwnPrenotazioni(@AuthenticationPrincipal Utente utente) {
-        return prenotazioneService.findByUtente(utente);
-    }
 
 }
