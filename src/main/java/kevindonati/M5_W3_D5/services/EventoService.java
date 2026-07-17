@@ -51,4 +51,9 @@ public class EventoService {
 
         return eventoRepository.save(eventoTrovato);
     }
+
+    public void findByIdAndDelete(UUID id) {
+        Evento eventoTrovato = this.findById(id);
+        eventoRepository.delete(eventoTrovato);
+    }
 }

@@ -66,7 +66,7 @@ public class UtenteService {
     }
 
     public void findByIdAndDelete(UUID id) {
-        Utente utenteTrovato = utenteRepository.findById(id).orElseThrow(() -> new NotFoundException("Utente con id " + id + " non trovato"));
+        Utente utenteTrovato = this.findById(id);
         utenteRepository.delete(utenteTrovato);
     }
 }
