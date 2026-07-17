@@ -47,7 +47,7 @@ public class UtenteService {
     }
 
     public Utente findByIdAndUpdate(UUID id, UtenteDTO payload) {
-        Utente utenteTrovato = utenteRepository.findById(id).orElseThrow(() -> new NotFoundException("Utente con id " + id + " non trovato"));
+        Utente utenteTrovato = this.findById(id);
         if (!utenteTrovato.getEmail().equals(payload.email()) && utenteRepository.existsByEmail(payload.email())) {
             throw new BadRequestException("L'email è già registrata");
         }
