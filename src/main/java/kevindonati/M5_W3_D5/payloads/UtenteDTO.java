@@ -23,7 +23,7 @@ public record UtenteDTO(
         String email,
 
         @NotBlank(message = "La password è obbligatoria")
-        @Size(min = 8, message = "La password deve contenere almeno 6 caratteri")
+        @Size(min = 6, message = "La password deve contenere almeno 6 caratteri")
         String password
 ) {
 }
